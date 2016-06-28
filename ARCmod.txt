@@ -1,0 +1,218 @@
+ARCmod 1.0 by Mike Smullens
+
+This code is provided as-is.  It is a small portion of the code written
+for Aarchon (darkhorse.triad.net:7000).  This code patch is only for
+advanced implementors, it will require familiarity with the code to get
+it running and adapt it to your own mud.  It is also suggested that the
+creation and stat system only be used for muds that arent open yet,
+because it will be traumatic to change the stat system on existing
+players.
+
+If anyone wants to improve this and redistribute it, be my guest, just
+include my name in the credits.  If you wish to add it to ROM, along with
+things like color code and OLC, you could probably distribute it as a new
+code base.
+
+You can email me at smote@mindless.com, but please no complaints or
+requests for me to adapt the code to your mud.  If you have a specific
+question I may be able to answer it.
+
+It includes an intricate character creation code that makes every character
+unique.  There are 3 levels of complexity ranging from instant to full,
+allowing for both diehard players and newbies who just want to get started.
+It is assumed there are 10 stats, which your mud will probably not have.
+You may adapt it to whichever stats you have, or use these 10 and then
+go through the code and make sure each stat is used fairly.  A list of
+what sorts of things each stat was intended for follows in this document.
+Field experience is not included in this patch, but it is a fundamental
+concept with these 10 stats.
+
+Lots of sample races for remort 0-3 are included.  The help files are not
+included, you should fit them into your own mud.  They cannot simply be
+pasted in of course, you also need the form and affect flags and such, 
+and the etls are set for Aarchon's 14 classes.
+
+It has a remort system, but the mob prog driven remort areas are not
+included.  If you do not want to write a remort area, you can make imm
+commands that make use of remort_begin.  It is assumed that the maximum
+player level is 100, but with 0 remorts the maximum level is 90.  After
+each remort you begin over at level 1 with a new race but the same skills,
+and can progress one level higher.  It takes 10 remorts to get to level
+100.  New races become available after each remort.
+
+It also includes a connected state based blacksmith system that allows
+players to custom design their equipment.  The equipment made and the
+prices will have to be brought in line with the standards of your mud.
+It is recommended that you do not install this if your mud does not have
+a solid economy.  If there are gold loopholes then players will be able
+to get insanely powerful equipment.  Make sure that gold is hard to come
+by.  Also custom naming equipment uses quest points.  If you do not have
+a questing system you may want to disable this or make it gold based.
+
+
+
+Adding this code to your mud (advanced coders only):
+
+- Backup your code before you start messing with it.
+
+- Add the files: nanny.c, remort.c, skills.c, smith.c, stats.c
+
+- Add the snippets in misc.c into the files indicated.
+
+- Add any flags referred to in the code that arent in your mud.
+	(this may be complicated if you have olc)
+
+- Add any function declarations or calls that are needed.
+
+- Make sure your current pfiles, area files, and save.c are compatible
+	with the new format.  If your mud is already open, it may not
+	be practical to add a new creation system and new stats.
+
+- This will require quite a bit of adaptation and coding ability, but
+	it is also much easier than writing these features from scratch,
+	its a good foundation with which to work.
+
+
+
+Stat help files:
+
+-1 STRENGTH~
+
+Strength is the ability to exert and resist physical forces and it measures
+the character's power and muscle mass.  Strength governs the amount of weight
+a character may carry on their person.  Stronger characters deal more damage
+when attacking in combat, and are able to wield bulkier weapons with grace.
+
+Strength is the prime stat of such skills as Enhanced Damage, and various
+weapon skills, and of the class Warrior.
+
+See HELP STATS for more information.
+~
+-1 CONSTITUTION~
+
+Constitution is a person's physical make-up: their immune system health,
+longevity, bone density, and hygeine.  Characters with robust constitutions
+will be able to withstand greater physical damage and have greater maximum
+hit oints.  High constitution aids in physical saving throws, particularly
+vs. poison and disease.
+
+Constitution is the prime stat of such skills as Cure Critical and Detoxify,
+and of the class Samurai.
+
+See HELP STATS for more information.
+~
+-1 VITALITY~
+
+Vitality is a measure of a character's energy, aerobic fitness, and vim. A
+vital character will become exhausted less quickly, and thus will regenerate
+hit points and move points faster.  It will also help characters to snap out
+of it when they have been dazed by a spell or a blow.
+
+Vitality is the prime stat of such skills as Berserk and Fast Healing, and
+of the class Gladiator.
+
+See HELP STATS for more information.
+~
+-1 AGILITY~
+
+Agility is a measure of overall body limberness, flexibility, and swiftness.
+An agile character can more easily evade blows, and thus has a lower armor
+class.  Their swiftness grants them more maximum movement points.
+
+Agility is the prime stat of such skills as Sneak and Tumbling, and of the
+class Ninja.
+
+See HELP STATS for more information.
+~
+-1 DEXTERITY~
+
+Dexterity is a measure of hand-eye coordination, accuracy, and manual
+finesse.  It allows more accurate attacks, thus decreasing thaco, and
+facilitates multiple attacks per round.
+
+Dexterity is the prime stat of such skills as Dual Wield and Steal, and of
+the class Thief.
+
+See HELP STATS for more information.
+~
+-1 INTELLIGENCE~
+
+Intelligence is a characters speed of thought and capacity for reason.
+Intelligent characters are quick studies, and can learn skills with
+fewer practices and learn quicker from the use of their skills.  They
+are able to refocus their magical energies quicker.  Intelligent
+characters are less prone to mental attacks than others.  Their
+intelligence helps them to better comprehend and make sense of the lessons
+learned in action, increasing the rate of conversion of field
+experience.
+
+Intelligence is the prime stat of such skills as Scrolls and Astral
+Projection, and of the classes Mage and Assassin.
+
+See HELP STATS for more information.
+~
+-1 WISDOM~
+
+Wisdom, apart from experience, is the property of awareness, judgement, and
+emotional health and stability.  Wise characters are in greater touch with
+the magical forces of the universe, and have more mana to draw on.  Wisdom
+increases perception, allowing you better chance at spotting illusions and
+hidden things.  Wisdom also helps characters integrate a larger portion of
+what they learn into their current knowledge, as opposed to field experience.
+
+Wisdom is the prime stat of such skills as Lore and Hunt, and of the classes
+Cleric and Templar.
+
+See HELP STATS for more information.
+~
+-1 DISCIPLINE~
+
+Discipline is self-control, orderly conduct, goal-oriented behavior, and
+persistence.  Dispciplined adventurers can study longer in the course of a
+day, and thus receive more practice sessions over the course of a level.
+Discipline also helps you stay focused and remain in action longer without
+becoming overwhelmed, so it increases the maximum amount of field
+experience you can absorb.  It helps you remain stalwart in the face of
+danger, reducing the effectiveness of fear.
+
+Discipline is the prime stat of such skills as Meditation and Rescue, and of
+the class Monk.
+
+See HELP STATS for more information.
+~
+-1 CHARISMA~
+
+Charisma is social grace, eloquence, attractiveness, and persuasiveness.
+A charismatic character has better leadership, and will allow groups to
+be more cohesive when that person leads, thus reducing the experience
+loss in groups of disparate level and alignment.  They will both be able
+to resist charm, and to keep charmed followers for longer.  Charisma
+also reduces the chance of borderline aggressive monsters attacking.
+It is also critical in the success of and resistance to bard song. 
+
+Charisma is the prime stat of such skills as War Cry and Charm Person, and
+of the class Paladin.
+
+See HELP STATS for more information.
+~
+-1 LUCK~
+
+Luck could be called Serendipity, Karma, Fate, Good Fortune... there are
+many ways to think about the universal phenomenon.  It is more or less
+the property of chance events following a pattern, be it favorable or
+not.  Luck helps in all kinds of saving throws.  It is useful in sticky
+situations like fleeing, and, in particular, recalling from combat.
+Luck helps in risky events like gambling or questing, and lucky
+characters reap greater benefits from these tasks.  Dumb luck improves
+all of a characters effective skill percentages slightly.  Good luck
+also slightly improves thaco and ac.
+
+Luck is the prime stat of such skills as Avoidance and Ignite, and of the
+class Illusionist.
+
+See HELP STATS for more information.
+~
+
+
+
+
